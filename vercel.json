@@ -1,5 +1,5 @@
 {
-  "buildCommand": "cd apps/web && npx prisma generate && npm run build",
+  "buildCommand": "npx prisma generate --schema=apps/web/prisma/schema.prisma && npm run build --prefix apps/web",
   "outputDirectory": "apps/web/.svelte-kit/output",
   "installCommand": "npm install"
 }
