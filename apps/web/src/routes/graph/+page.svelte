@@ -33,7 +33,7 @@
 </svelte:head>
 
 <div class="shell">
-  <div class="blob b1"/><div class="blob b2"/>
+  <div class="blob b1"></div><div class="blob b2"></div>
 
   <header class="topnav">
     <button class="back-btn" on:click={() => goto('/dashboard')}>← Dashboard</button>

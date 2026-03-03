@@ -8,20 +8,3 @@
     goto(session ? '/dashboard' : '/login', { replaceState: true });
   });
 </script>
-
-<style>
-.home {
-  text-align: center;
-  padding: 80px;
-}
-button {
-  margin-top: 30px;
-  padding: 14px 28px;
-  border-radius: 14px;
-  border: none;
-  background: linear-gradient(90deg, purple, hotpink);
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-}
-</style>
