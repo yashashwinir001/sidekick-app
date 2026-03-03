@@ -9,6 +9,7 @@
       "env": [
         "AUTH_SECRET",
         "AUTH_TRUST_HOST",
+        "AUTH_URL",
         "GITHUB_ID",
         "GITHUB_SECRET",
         "DATABASE_URL"

@@ -4,7 +4,10 @@ import Credentials from "@auth/core/providers/credentials";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
 
-const prisma = new PrismaClient();
+// ✅ Fix: Prevent multiple Prisma instances in serverless
+const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
+const prisma = globalForPrisma.prisma ?? new PrismaClient();
+if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
 
 const auth = SvelteKitAuth({
   secret: process.env.AUTH_SECRET,
@@ -25,13 +28,16 @@ const auth = SvelteKitAuth({
         const password = credentials?.password as string | undefined;
         if (!email || !password) return null;
 
-        const user = await prisma.user.findUnique({ where: { email } });
-        if (!user || !user.password) return null;
-
-        const valid = await bcrypt.compare(password, user.password);
-        if (!valid) return null;
-
-        return { id: user.id, name: user.name, email: user.email };
+        try {
+          const user = await prisma.user.findUnique({ where: { email } });
+          if (!user || !user.password) return null;
+          const valid = await bcrypt.compare(password, user.password);
+          if (!valid) return null;
+          return { id: user.id, name: user.name, email: user.email };
+        } catch (e) {
+          console.error('Prisma error:', e);
+          return null;
+        }
       },
     }),
   ],
