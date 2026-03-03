@@ -3,15 +3,17 @@ import GitHub from "@auth/core/providers/github";
 import Credentials from "@auth/core/providers/credentials";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
-import { AUTH_SECRET, GITHUB_ID, GITHUB_SECRET } from "$env/static/private";
 
 const prisma = new PrismaClient();
 
 const auth = SvelteKitAuth({
-  secret: AUTH_SECRET,
+  secret: process.env.AUTH_SECRET,
   trustHost: true,
   providers: [
-    GitHub({ clientId: GITHUB_ID, clientSecret: GITHUB_SECRET }),
+    GitHub({
+      clientId: process.env.GITHUB_ID,
+      clientSecret: process.env.GITHUB_SECRET,
+    }),
     Credentials({
       name: "Credentials",
       credentials: {
@@ -34,11 +36,19 @@ const auth = SvelteKitAuth({
     }),
   ],
   session: { strategy: "jwt" },
+  callbacks: {
+    async session({ session }) {
+      return session;
+    },
+    async redirect({ url, baseUrl }) {
+      if (url === baseUrl || url === `${baseUrl}/`) {
+        return `${baseUrl}/dashboard`;
+      }
+      return url.startsWith(baseUrl) ? url : `${baseUrl}/dashboard`;
+    }
+  },
 });
 
-// ✅ Export handle as a plain function — this is what SvelteKit expects
 export const handle = auth.handle;
-
-// ✅ Export signIn/signOut for use in server files
 export const signIn = auth.signIn;
 export const signOut = auth.signOut;
